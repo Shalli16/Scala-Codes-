@@ -1,0 +1,55 @@
+import util.Random
+
+def randomGrid(rows:Int, cols:Int, bombs:Int):Array[Array[Boolean]]={
+  require (bombs <=rows*cols)
+  //1-D vector with the right number of bombs at the beginning
+  val a = Vector.tabulate(rows*cols)(_<bombs) 
+  //Random.shuffle will shuffle the elements of a in a random order
+  val shuffled = Random.shuffle (a)
+  val result = Array.fill(rows,cols)(false)
+  var idx=0
+  for (i<- 0 until rows; j<-0 until cols){
+    result(i)(j) = shuffled(idx)
+    idx+=1
+  }
+  result
+}
+//Other methods for generating random bombs are possible; e.g. repeatedly //selecting a random row and random column to set to true. But if that row and //column is already true(already a bomb there),then need to select a different //one. 
+
+
+def solve(a:Array[Array[Boolean]])={
+  val rows=a.length
+  val cols =a(0).length
+  //b is auxiliary 2D array with extra 2 rows and 2 cols at the borders.
+  val b=Array.fill(rows+2,cols+2)(false)
+  for(r<-0 until rows;c<-0 until cols)
+    b(r+1)(c+1)=a(r)(c)  //the status of row r col c is stored at b(r+1)(c+1)
+	
+  val result=Array.tabulate(rows,cols)((r,c)=>{
+    if (b(r+1)(c+1)) 9 //if the current square has bomb, put 9
+    else{
+      var res=0
+      for(rr<-r to r+2; cc<-c to c+2) if(b(rr)(cc))res+=1
+      res
+    }
+  })
+  
+  result
+}
+
+val board=randomGrid(args(0).toInt,args(1).toInt, args(2).toInt)
+println("Random Board:")
+for (r<-0 until board.length){
+  for (c<-0 until board(r).length){
+    if(board(r)(c))print ("*")
+	else print ("-")
+	print (" ")
+  }
+  println()
+}
+val sol=solve(board)
+println("Solution:")
+for(r<-0 until sol.length){
+  for (c<-0 until sol(r).length) print(sol(r)(c)+" ")
+  println()
+}
