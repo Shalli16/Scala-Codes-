@@ -1,0 +1,6 @@
+import scala.swing._
+val frame = new MainFrame {
+	title = "Homework 5"
+	contents = Button("Panic")({sys.exit})
+}
+frame.visible = true
